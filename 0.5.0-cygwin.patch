@@ -1,0 +1,130 @@
+--- origsrc/shotwell-0.5.0/Makefile	2010-03-12 17:03:09.000000000 -0600
++++ src/shotwell-0.5.0/Makefile	2010-05-06 14:43:14.031065500 -0500
+@@ -17,11 +17,16 @@ BUILD_RELEASE=1
+ 
+ UNAME := $(shell uname)
+ SYSTEM := $(UNAME:MINGW32_%=MinGW)
++SYSTEM := $(SYSTEM:CYGWIN_%=Cygwin)
+ 
+ ifeq "$(SYSTEM)" "Linux"
+   LINUX = 1
+ endif
+ 
++ifeq "$(SYSTEM)" "Cygwin"
++  CYGWIN = 1
++endif
++
+ ifeq "$(SYSTEM)" "MinGW"
+   WINDOWS = 1
+ endif
+@@ -96,9 +101,11 @@ SRC_FILES = \
+     Screensaver.vala
+ 
+ ifndef LINUX
++ifndef CYGWIN
+ SRC_FILES += \
+     GConf.vala
+ endif
++endif
+ 
+ VAPI_FILES = \
+ 	libexif.vapi \
+@@ -167,6 +174,16 @@ EXT_PKGS += \
+     dbus-glib-1
+ endif
+ 
++ifdef CYGWIN
++EXT_PKGS += \
++	gconf-2.0 \
++	libsoup-2.4 \
++	libxml-2.0 \
++	unique-1.0 \
++	webkit-1.0 \
++	dbus-glib-1
++endif
++
+ ifdef MAC
+ EXT_PKGS += \
+     ige-mac-integration
+@@ -191,6 +208,16 @@ EXT_PKG_VERSIONS += \
+     dbus-glib-1 >= 0.80
+ endif
+ 
++ifdef CYGWIN
++EXT_PKG_VERSIONS += \
++	gconf-2.0 >= 2.22.0 \
++	libsoup-2.4 >= 2.26.0 \
++	libxml-2.0 >= 2.6.32 \
++	unique-1.0 >= 1.0.0 \
++	webkit-1.0 >= 1.1.5 \
++	dbus-glib-1 >= 0.80
++endif
++
+ PKGS = $(EXT_PKGS) $(LOCAL_PKGS)
+ 
+ ifndef BUILD_DIR
+@@ -246,6 +273,10 @@ shotwell.res: windows/shotwell.rc
+ 
+ endif
+ 
++ifdef CYGWIN
++  VALA_DEFINES = -D NO_CAMERA
++endif
++
+ ifdef MAC
+   VALA_DEFINES = -D MAC -D NO_CAMERA -D NO_PRINTING -D NO_PUBLISHING -D NO_LIBUNIQUE -D NO_SVG
+   EXPANDED_OBJ_FILES += src/mac.o
+@@ -334,7 +365,8 @@ endif
+ ifndef DISABLE_DESKTOP_UPDATE
+ 	-update-desktop-database || :
+ endif
+-ifdef LINUX
++ifndef MAC
++ifndef WINDOWS
+ ifndef DISABLE_SCHEMAS_INSTALL
+ 	GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` gconftool-2 --makefile-install-rule misc/shotwell.schemas
+ else
+@@ -342,6 +374,7 @@ else
+ 	$(INSTALL_DATA) misc/shotwell.schemas $(DESTDIR)$(SCHEMA_FILE_DIR)
+ endif
+ endif
++endif
+ 	-$(foreach lang,$(SUPPORTED_LANGUAGES),`mkdir -p $(SYSTEM_LANG_DIR)/$(lang)/LC_MESSAGES ; \
+         $(INSTALL_DATA) $(LOCAL_LANG_DIR)/$(lang)/LC_MESSAGES/shotwell.mo \
+             $(SYSTEM_LANG_DIR)/$(lang)/LC_MESSAGES/shotwell.mo`)
+--- origsrc/shotwell-0.5.0/src/main.vala	2010-03-12 17:03:09.000000000 -0600
++++ src/shotwell-0.5.0/src/main.vala	2010-05-06 13:12:27.932566500 -0500
+@@ -16,9 +16,11 @@ Unique.Response on_shotwell_message(Uniq
+     Unique.Response response = Unique.Response.OK;
+     
+     switch (command) {
++#if !NO_CAMERA
+         case ShotwellCommand.MOUNTED_CAMERA:
+             LibraryWindow.get_app().mounted_camera_shell_notification(data.get_text());
+         break;
++#endif
+         
+         case Unique.Command.ACTIVATE:
+             LibraryWindow.get_app().present_with_time(timestamp);
+@@ -43,10 +45,13 @@ void library_exec(string[] mounts) {
+ #else
+     // the library is single-instance; editing windows are one-process-per
+     Unique.App shotwell = new Unique.App("org.yorba.shotwell", null);
++#if !NO_CAMERA
+     shotwell.add_command("MOUNTED_CAMERA", (int) ShotwellCommand.MOUNTED_CAMERA);
++#endif
+     shotwell.message_received += on_shotwell_message;
+ 
+     if (shotwell.is_running) {
++#if !NO_CAMERA
+         // send attached cameras & activate the window
+         foreach (string mount in mounts) {
+             Unique.MessageData data = new Unique.MessageData();
+@@ -54,6 +59,7 @@ void library_exec(string[] mounts) {
+         
+             shotwell.send_message((int) ShotwellCommand.MOUNTED_CAMERA, data);
+         }
++#endif
+         
+         shotwell.send_message((int) Unique.Command.ACTIVATE, null);
+         

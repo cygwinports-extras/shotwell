@@ -1,0 +1,36 @@
+http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=577913
+http://trac.yorba.org/changeset?new=1415&old=1414
+
+--- origsrc/shotwell-0.5.0/Makefile	2010-05-06 14:49:25.839331700 -0500
++++ src/shotwell-0.5.0/Makefile	2010-05-06 14:58:28.023342800 -0500
+@@ -6,7 +6,7 @@ GETTEXT_PACKAGE = $(PROGRAM)
+ BUILD_ROOT = 1
+ 
+ VALAC = valac
+-MIN_VALAC_VERSION = 0.7.10
++MIN_VALAC_VERSION = 0.8.0
+ INSTALL_PROGRAM = install
+ INSTALL_DATA = install -m 644
+ 
+--- origsrc/shotwell-0.5.0/src/Page.vala	2010-03-12 17:03:09.000000000 -0600
++++ src/shotwell-0.5.0/src/Page.vala	2010-05-06 12:55:55.449799700 -0500
+@@ -48,7 +48,7 @@ public abstract class Page : Gtk.Scrolle
+     }
+     
+     private void destroy_ui_manager_widgets(Gtk.UIManagerItemType item_type) {
+-        unowned SList<Gtk.Widget> toplevels = ui.get_toplevels(item_type);
++        SList<Gtk.Widget> toplevels = ui.get_toplevels(item_type);
+         for (int ctr = 0; ctr < toplevels.length(); ctr++)
+             toplevels.nth(ctr).data.destroy();
+     }
+--- origsrc/shotwell-0.5.0/src/Sidebar.vala	2010-03-12 17:03:09.000000000 -0600
++++ src/shotwell-0.5.0/src/Sidebar.vala	2010-05-06 12:56:09.842622900 -0500
+@@ -69,7 +69,7 @@ public class Sidebar : Gtk.TreeView {
+ 
+         Gtk.TreeSelection selection = get_selection();
+         selection.set_mode(Gtk.SelectionMode.BROWSE);
+-        selection.set_select_function(on_selection, null);
++        selection.set_select_function(on_selection);
+ 
+         enable_model_drag_dest(LibraryWindow.get_drop_target_entries(), Gdk.DragAction.ASK);
+         

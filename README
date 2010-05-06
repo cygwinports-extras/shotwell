@@ -1,0 +1,86 @@
+shotwell
+------------------------------------------
+Shotwell is a digital photo organizer designed for the GNOME desktop 
+environment.  It allows you to import photos from disk or camera, 
+organize them in various ways, view them in full-window or fullscreen 
+mode, and export them to share with others.
+
+For more information about this package, see the upstream documentation 
+in /usr/share/doc/shotwell.
+
+Runtime requirements:
+  cygwin-1.7.5-1
+  gdk-pixbuf2.0-svg-2.26.0-2
+  libcairo2-1.8.10-1
+  libdbus-glib_1_2-0.82-1
+  libexif12-0.6.17-10
+  libgcc1-4.3.4-3
+  libgconf2_4-2.28.0-1
+  libgdk_pixbuf2.0_0-2.18.6-1
+  libgee2-0.5.0-1
+  libglib2.0_0-2.22.4-2
+  libgtk2.0_0-2.18.6-1
+  libintl8-0.17-11
+  libpango1.0_0-1.26.2-1
+  libsoup2.4_1-2.28.2-1
+  libsqlite3_0-3.6.21-3
+  libunique1.0_0-1.0.8-1
+  libwebkit1.0_2-1.1.15.4-1
+  libxml2-2.7.6-1
+
+Build requirements:
+  binutils-2.20.51-1
+  cygport-0.9.83-1
+  gcc4-core-4.3.4-3
+  gettext-devel-0.17-11
+  make-3.81-2
+  pkg-config-0.23b-10
+  vala-0.8.1-1
+  vala-dbus-glib1
+  vala-gconf2.0
+  vala-gtk2.0
+  vala-pango
+  vala-sqlite3
+  vala-libsoup2.4
+  vala-libxml2.0
+  vala-unique1.0
+  vala-webkit1.0
+
+License:
+  LGPL-2.1+, CC-BY-SA-2.5, CC-BY-SA-3.0
+
+Canonical homepage:
+  http://yorba.org/shotwell/
+
+Canonical download:
+  http://yorba.org/download/shotwell/
+
+------------------------------------------
+
+Build instructions:
+  unpack shotwell-0.5.0-X-src.tar.bz2
+    if you use setup to install this src package, it will be
+	 unpacked under /usr/src automatically
+  cd /usr/src
+  cygport shotwell-0.5.0-X.cygport all
+
+This will create:
+  /usr/src/shotwell-0.5.0-X-src.tar.bz2
+  /usr/src/shotwell-0.5.0-X.tar.bz2
+
+Or use 'cygport shotwell-0.5.0-X.sh prep' to get a patched source directory
+
+To find out the files included in the binary distribution, you can
+use "cygcheck -l PKG", or browse the listing for the appropriate version
+at <http://cygwin.com/packages/>.
+
+------------------------------------------
+
+Port Notes:
+
+-----  shotwell-0.5.0-1 -----
+Initial release for Cygwin 1.7.
+
+
+Cygwin port maintained by:
+http://sourceware.org/cygwinports/
