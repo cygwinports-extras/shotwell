@@ -1,0 +1,164 @@
+--- origsrc/shotwell-0.6.0/Makefile	2010-06-28 14:28:16.000000000 -0500
++++ src/shotwell-0.6.0/Makefile	2010-06-30 16:00:33.369567300 -0500
+@@ -16,9 +16,16 @@ BUILD_RELEASE=1
+ 
+ UNAME := $(shell uname)
+ SYSTEM := $(UNAME:MINGW32_%=MinGW)
++SYSTEM := $(SYSTEM:CYGWIN%=Cygwin)
++
++ifeq "$(SYSTEM)" "Cygwin"
++  CYGWIN = 1
++  X11 = 1
++endif
+ 
+ ifeq "$(SYSTEM)" "Linux"
+   LINUX = 1
++  X11 = 1
+ endif
+ 
+ ifeq "$(SYSTEM)" "MinGW"
+@@ -41,7 +48,7 @@ ifdef LINUX
+     EXPORT_FLAGS = -export-dynamic
+ endif
+ 
+-ifdef WINDOWS
++ifeq "$(WINDOWS)$(CYGWIN)" "1"
+     EXPORT_FLAGS = -export-all-symbols
+ endif
+ 
+@@ -115,7 +122,7 @@ SRC_FILES = \
+ 	PngSupport.vala \
+ 	PhotoExporter.vala
+ 
+-ifndef LINUX
++ifndef X11
+ SRC_FILES += \
+ 	GConf.vala
+ endif
+@@ -210,19 +217,23 @@ EXT_PKGS = \
+ LIBRAW_PKG = \
+ 	libraw
+ 
+-ifdef LINUX
++ifdef X11
+ EXT_PKGS += \
+ 	gconf-2.0 \
+-	libgphoto2 \
+ 	libsoup-2.4 \
+ 	libxml-2.0 \
+ 	unique-1.0 \
+ 	webkit-1.0 \
+-	gudev-1.0 \
+ 	dbus-glib-1 \
+ 	gdk-x11-2.0
+ endif
+ 
++ifdef LINUX
++EXT_PKGS += \
++	libgphoto2 \
++	gudev-1.0
++endif
++
+ # libraw is handled separately (see note below); when libraw-config is no longer needed, the version
+ # should be added to this list
+ EXT_PKG_VERSIONS = \
+@@ -235,18 +246,22 @@ EXT_PKG_VERSIONS = \
+ LIBRAW_VERSION = \
+ 	0.9.0
+ 
+-ifdef LINUX
++ifdef X11
+ EXT_PKG_VERSIONS += \
+ 	gconf-2.0 >= 2.22.0 \
+-	libgphoto2 >= 2.4.2 \
+ 	libsoup-2.4 >= 2.26.0 \
+ 	libxml-2.0 >= 2.6.32 \
+ 	unique-1.0 >= 1.0.0 \
+ 	webkit-1.0 >= 1.1.5 \
+-	gudev-1.0 >= 145 \
+ 	dbus-glib-1 >= 0.80
+ endif
+ 
++ifdef LINUX
++EXT_PKG_VERSIONS += \
++	libgphoto2 >= 2.4.2 \
++	gudev-1.0 >= 145
++endif
++
+ PKGS = $(EXT_PKGS) $(LOCAL_PKGS) $(LIBRAW_PKG)
+ 
+ ifndef BUILD_DIR
+@@ -288,6 +303,10 @@ VALA_CFLAGS = `pkg-config --cflags $(EXT
+ 
+ VALA_LDFLAGS = `pkg-config --libs $(EXT_PKGS) gthread-2.0`
+ 
++ifdef CYGWIN
++  VALA_DEFINES = -D NO_CAMERA
++endif
++
+ ifdef WINDOWS
+   VALA_DEFINES = -D WINDOWS -D NO_CAMERA -D NO_PRINTING -D NO_PUBLISHING -D NO_LIBUNIQUE -D NO_EXTENDED_POSIX -D NO_SET_BACKGROUND
+   EXPANDED_OBJ_FILES += src/windows.o
+@@ -320,7 +339,7 @@ endif
+ 
+ # Packaged libraw is not widely available, so we must fake what would be in its .pc file
+ # if not available.
+-ifdef LINUX
++ifdef X11
+ LIBRAW_CONFIG=./libraw-config
+ endif
+ 
+@@ -401,7 +420,7 @@ endif
+ ifndef DISABLE_DESKTOP_UPDATE
+ 	-update-desktop-database || :
+ endif
+-ifdef LINUX
++ifdef X11
+ ifndef DISABLE_SCHEMAS_INSTALL
+ 	GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` gconftool-2 --makefile-install-rule misc/shotwell.schemas
+ else
+@@ -426,7 +445,7 @@ uninstall:
+ ifndef DISABLE_DESKTOP_UPDATE
+ 	-update-desktop-database || :
+ endif
+-ifdef LINUX
++ifdef X11
+ ifndef DISABLE_SCHEMAS_INSTALL
+ 	GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` gconftool-2 --makefile-uninstall-rule misc/shotwell.schemas
+ else
+--- origsrc/shotwell-0.6.0/src/main.vala	2010-06-28 14:28:16.000000000 -0500
++++ src/shotwell-0.6.0/src/main.vala	2010-06-30 15:58:16.973765900 -0500
+@@ -16,9 +16,11 @@ Unique.Response on_shotwell_message(Uniq
+     Unique.Response response = Unique.Response.OK;
+     
+     switch (command) {
++#if !NO_CAMERA
+         case ShotwellCommand.MOUNTED_CAMERA:
+             LibraryWindow.get_app().mounted_camera_shell_notification(data.get_text(), false);
+         break;
++#endif
+         
+         case Unique.Command.ACTIVATE:
+             LibraryWindow.get_app().present_with_time(timestamp);
+@@ -43,10 +45,13 @@ void library_exec(string[] mounts) {
+ #else
+     // the library is single-instance; editing windows are one-process-per
+     Unique.App shotwell = new Unique.App("org.yorba.shotwell", null);
++#if !NO_CAMERA
+     shotwell.add_command("MOUNTED_CAMERA", (int) ShotwellCommand.MOUNTED_CAMERA);
++#endif
+     shotwell.message_received.connect(on_shotwell_message);
+ 
+     if (shotwell.is_running) {
++#if !NO_CAMERA
+         // send attached cameras & activate the window
+         foreach (string mount in mounts) {
+             Unique.MessageData data = new Unique.MessageData();
+@@ -54,6 +59,7 @@ void library_exec(string[] mounts) {
+             
+             shotwell.send_message((int) ShotwellCommand.MOUNTED_CAMERA, data);
+         }
++#endif
+         
+         shotwell.send_message((int) Unique.Command.ACTIVATE, null);
+         

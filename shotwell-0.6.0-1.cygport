@@ -1,8 +1,7 @@
-DESCRIPTION=
+DESCRIPTION="GNOME photo manager"
 HOMEPAGE="http://yorba.org/shotwell/"
 SRC_URI="http://yorba.org/download/shotwell/${PV[1]}.${PV[2]}/${P}.tar.bz2"
-PATCH_URI="0.5.0-cygwin.patch
-           0.5.0-vala08.patch"
+PATCH_URI="0.6.0-cygwin.patch"
 
 src_compile() {
 	lndirs

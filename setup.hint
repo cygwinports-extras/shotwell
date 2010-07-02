@@ -1,5 +1,5 @@
 category: Graphics Gnome
-requires: GConf2 gdk-pixbuf2.0-svg libcairo2 libdbus-glib_1_2 libexif12 libgcc1 libgconf2_4 libgdk_pixbuf2.0_0 libgee2 libglib2.0_0 libgtk2.0_0 libintl8 libpango1.0_0 libsoup2.4_1 libsqlite3_0 libunique1.0_0 libwebkit1.0_2 libxml2
+requires: GConf2 gdk-pixbuf2.0-svg libcairo2 libdbus-glib_1_2 libexif12 libgcc1 libgconf2_4 libgdk_pixbuf2.0_0 libgee2 libgexiv2_0 libglib2.0_0 libgtk2.0_0 libintl8 libpango1.0_0 libsoup2.4_1 libsqlite3_0 libstdc++6 libunique1.0_0 libwebkit1.0_2 libxml2
 sdesc: "GNOME digital photo organizer"
 ldesc: "Shotwell is a digital photo organizer designed for the GNOME 
 desktop environment.  It allows you to import photos from disk or 
