@@ -1,0 +1,16 @@
+DESCRIPTION="GNOME photo manager"
+HOMEPAGE="http://yorba.org/shotwell/"
+SRC_URI="http://yorba.org/download/shotwell/${PV[1]}.${PV[2]}/${P}.tar.bz2"
+PATCH_URI="0.10-no-gudev.patch"
+
+src_compile() {
+	lndirs
+	cd ${B}
+	./configure \
+		--prefix=/usr \
+		--disable-desktop-update \
+		--disable-icon-update \
+		--disable-schemas-install
+	cygmake shotwell EXPORT_FLAGS=-Wl,--export-all-symbols,--out-implib,libshotwell.a
+	cygmake
+}
