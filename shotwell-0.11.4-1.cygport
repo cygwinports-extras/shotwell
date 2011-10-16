@@ -1,7 +1,9 @@
 DESCRIPTION="GNOME photo manager"
 HOMEPAGE="http://yorba.org/shotwell/"
 SRC_URI="http://yorba.org/download/shotwell/${PV[1]}.${PV[2]}/${P}.tar.bz2"
-PATCH_URI="0.10-no-gudev.patch"
+PATCH_URI="mirror://portage/media-gfx/${PN}/files/${PN}-0.11.2-libraw-0.14.patch
+	   0.11.4-no-gudev.patch
+           0.11.4-plugin-no-undefined.patch"
 
 src_compile() {
 	lndirs
