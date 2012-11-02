@@ -72,21 +72,22 @@
          } else if (source is VideoSource || source is VideoImportSource) {
              if (source is VideoSource) {
 +#else
-+        } else if (source is Videosource) {
++        } else if (source is VideoSource) {
                  Video video = (Video) source;
                  clip_duration = video.get_clip_duration();
  
-@@ -214,8 +227,10 @@ private class BasicProperties : Properti
+@@ -214,9 +227,11 @@ private class BasicProperties : Properti
                      dimensions = video.get_frame_dimensions();
  
                  start_time = video.get_exposure_time();
 +#if CAMERA
              } else {
                  start_time = ((VideoImportSource) source).get_exposure_time();
-+#endif
              }
++#endif
              end_time = start_time;
          }
+     }
 @@ -229,10 +244,15 @@ private class BasicProperties : Properti
          foreach (DataView view in iter) {
              DataSource source = view.get_source();
@@ -98,7 +99,7 @@
                      ((PhotoImportSource) source).get_exposure_time();
 +#else
 +            if (source is PhotoSource) {
-+                time_t exposure_time = ((PhotoImportSource source).get_exposure_time();
++                time_t exposure_time = ((PhotoSource) source).get_exposure_time();
 +#endif
  
                  if (exposure_time != 0) {

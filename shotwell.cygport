@@ -1,5 +1,5 @@
 NAME="shotwell"
-VERSION=0.12.3
+VERSION=0.13.1
 RELEASE=1
 CATEGORY="Gnome Graphics"
 SUMMARY="GNOME digital photo organizer"
@@ -8,8 +8,8 @@ desktop environment.  It allows you to import photos from disk or camera,
 organize them in various ways, view them in full-window or fullscreen mode,
 and export them to share with others."
 HOMEPAGE="http://yorba.org/shotwell/"
-SRC_URI="http://yorba.org/download/shotwell/${PV[1]}.${PV[2]}/${P}.tar.bz2"
-PATCH_URI="0.12.3-no-gudev.patch
+SRC_URI="http://yorba.org/download/shotwell/${PV[1]}.${PV[2]}/${P}.tar.xz"
+PATCH_URI="0.13.1-no-gudev.patch
            0.13.1-plugin-no-undefined.patch"
 
 src_compile() {
