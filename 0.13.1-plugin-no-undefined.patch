@@ -1,0 +1,28 @@
+--- origsrc/shotwell-0.13.1/plugins/Makefile.plugin.mk	2012-10-05 12:51:09.000000000 -0500
++++ src/shotwell-0.13.1/plugins/Makefile.plugin.mk	2012-11-01 22:18:03.124866900 -0500
+@@ -34,7 +34,7 @@ SRC_FILES := ../common/Resources.vala $(
+ CFILES := $(notdir $(SRC_FILES:.vala=.c))
+ OFILES := $(notdir $(SRC_FILES:.vala=.o))
+ 
+-CFLAGS := `pkg-config --print-errors --cflags $(EXT_PKGS) $(PLUGIN_PKGS)` -nostdlib -export-dynamic $(PLUGIN_CFLAGS)
++CFLAGS := `pkg-config --print-errors --cflags $(EXT_PKGS) $(PLUGIN_PKGS)` $(PLUGIN_CFLAGS)
+ LIBS := `pkg-config --print-errors --libs $(EXT_PKGS) $(PLUGIN_PKGS)`
+ DEFINES := -D_VERSION='"$(PLUGINS_VERSION)"' -DGETTEXT_PACKAGE='"shotwell"'
+ 
+@@ -57,7 +57,7 @@ $(OFILES): %.o: %.c $(CFILES)
+ 	$(CC) -c $(CFLAGS) $(DEFINES) -I../.. $(CFILES)
+ 
+ $(PLUGIN).so: $(OFILES)
+-	$(CC) $(CFLAGS) $(LDFLAGS) -shared $(OFILES) $(LIBS) -o $@
++	$(CC) $(CFLAGS) $(LDFLAGS) -shared $(OFILES) ../../libshotwell.dll.a $(LIBS) -o $@
+ 
+ .PHONY: cleantemps
+ cleantemps:
+--- origsrc/shotwell-0.13.1/shotwell-plugin-dev-1.0.m4	2012-10-05 12:51:09.000000000 -0500
++++ src/shotwell-0.13.1/shotwell-plugin-dev-1.0.m4	2012-11-01 22:18:38.864916200 -0500
+@@ -8,4 +8,5 @@ Description: Headers for building Shotwe
+ Requires: _REQUIREMENTS_
+ Version: _VERSION_
+ Cflags: -I${includedir}/shotwell
++Libs: -L${libdir} -lshotwell
+ 
