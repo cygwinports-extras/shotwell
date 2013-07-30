@@ -23,5 +23,5 @@ src_compile() {
 		--disable-desktop-update \
 		--disable-icon-update
 	cygmake shotwell EXPORT_FLAGS=-Wl,--export-all-symbols,--out-implib,libshotwell.dll.a
-	cygmake
+	cygmake -j1
 }
