@@ -1,24 +1,24 @@
---- origsrc/shotwell-0.13.1/Makefile	2012-10-05 13:07:37.000000000 -0500
-+++ src/shotwell-0.13.1/Makefile	2012-11-01 22:07:23.873984700 -0500
-@@ -297,7 +297,6 @@ EXT_PKGS = \
- 	gstreamer-base-0.10 \
- 	gstreamer-pbutils-0.10 \
+--- origsrc/shotwell-0.14.1/Makefile	2013-07-30 01:07:10.224488100 -0500
++++ src/shotwell-0.14.1/Makefile	2013-07-30 01:00:40.000000000 -0500
+@@ -300,7 +300,6 @@ EXT_PKGS = \
+ 	gstreamer-base-1.0 \
+ 	gstreamer-pbutils-1.0 \
  	gtk+-3.0 \
 -	gudev-1.0 \
  	libexif \
  	libgphoto2 \
  	json-glib-1.0 \
-@@ -330,7 +329,6 @@ EXT_PKG_VERSIONS = \
- 	gstreamer-plugins-base-0.10 >= 0.10.32 \
- 	gstreamer-pbutils-0.10 >= 0.10.32 \
+@@ -332,7 +331,6 @@ EXT_PKG_VERSIONS = \
+ 	gstreamer-plugins-base-1.0 >= 1.0.0 \
+ 	gstreamer-pbutils-1.0 >= 1.0.0 \
  	gtk+-3.0 >= 3.0.11 \
 -	gudev-1.0 >= 145 \
  	libexif >= 0.6.16 \
  	libgphoto2 >= 2.4.2 \
  	libraw >= 0.13.2 \
---- origsrc/shotwell-0.13.1/src/BatchImport.vala	2012-10-05 12:51:09.000000000 -0500
-+++ src/shotwell-0.13.1/src/BatchImport.vala	2012-11-01 22:07:58.934033100 -0500
-@@ -117,8 +117,10 @@ public enum ImportResult {
+--- origsrc/shotwell-0.14.1/src/BatchImport.vala	2013-07-30 01:07:10.233488600 -0500
++++ src/shotwell-0.14.1/src/BatchImport.vala	2013-07-30 01:00:40.000000000 -0500
+@@ -121,8 +121,10 @@ public enum ImportResult {
                  return ImportResult.FILE_WRITE_ERROR;
              else
                  return ImportResult.FILE_ERROR;
@@ -29,9 +29,9 @@
          }
          
          return default_result;
---- origsrc/shotwell-0.13.1/src/Properties.vala	2012-10-05 12:51:09.000000000 -0500
-+++ src/shotwell-0.13.1/src/Properties.vala	2012-11-01 22:12:11.414381500 -0500
-@@ -158,6 +158,7 @@ private class BasicProperties : Properti
+--- origsrc/shotwell-0.14.1/src/Properties.vala	2013-07-30 01:07:10.241489100 -0500
++++ src/shotwell-0.14.1/src/Properties.vala	2013-07-30 01:03:29.670873200 -0500
+@@ -194,6 +194,7 @@ private class BasicProperties : Properti
  
          title = source.get_name();
          
@@ -39,7 +39,7 @@
          if (source is PhotoSource || source is PhotoImportSource) {           
              start_time = (source is PhotoSource) ? ((PhotoSource) source).get_exposure_time() :
                  ((PhotoImportSource) source).get_exposure_time();
-@@ -165,6 +166,13 @@ private class BasicProperties : Properti
+@@ -201,6 +202,13 @@ private class BasicProperties : Properti
                          
              PhotoMetadata? metadata = (source is PhotoSource) ? ((PhotoSource) source).get_metadata() :
                  ((PhotoImportSource) source).get_metadata();
@@ -53,7 +53,7 @@
  
              if (metadata != null) {
                  exposure = metadata.get_exposure_string();
-@@ -184,8 +192,10 @@ private class BasicProperties : Properti
+@@ -220,8 +228,10 @@ private class BasicProperties : Properti
                      Dimensions(0, 0);
              }
              
@@ -64,7 +64,7 @@
              
              if (source is Photo && ((Photo) source).get_master_file_format() == PhotoFileFormat.RAW) {
                  Photo photo = source as Photo;
-@@ -205,8 +215,11 @@ private class BasicProperties : Properti
+@@ -241,8 +251,11 @@ private class BasicProperties : Properti
              
              photo_count = event_photo_count;
              video_count = event_video_count;
@@ -76,7 +76,7 @@
                  Video video = (Video) source;
                  clip_duration = video.get_clip_duration();
  
-@@ -214,9 +227,11 @@ private class BasicProperties : Properti
+@@ -250,9 +263,11 @@ private class BasicProperties : Properti
                      dimensions = video.get_frame_dimensions();
  
                  start_time = video.get_exposure_time();
@@ -88,7 +88,7 @@
              end_time = start_time;
          }
      }
-@@ -229,10 +244,15 @@ private class BasicProperties : Properti
+@@ -265,10 +280,15 @@ private class BasicProperties : Properti
          foreach (DataView view in iter) {
              DataSource source = view.get_source();
              
@@ -104,7 +104,7 @@
  
                  if (exposure_time != 0) {
                      if (start_time == 0 || exposure_time < start_time)
-@@ -268,10 +288,15 @@ private class BasicProperties : Properti
+@@ -304,10 +324,15 @@ private class BasicProperties : Properti
                  photo_count += event_photo_count;
                  video_count += event_video_count;
                  event_count++;
@@ -120,9 +120,21 @@
  
                  if (exposure_time != 0) {
                      if (start_time == 0 || exposure_time < start_time)
---- origsrc/shotwell-0.13.1/src/SearchFilter.vala	2012-10-05 12:59:02.000000000 -0500
-+++ src/shotwell-0.13.1/src/SearchFilter.vala	2012-11-01 22:13:23.154480500 -0500
-@@ -482,8 +482,10 @@ public class SearchFilterActions {
+@@ -521,7 +546,11 @@ private class ExtendedPropertiesWindow :
+             if (source == null)
+                 return;
+             
++#if CAMERA
+             if (source is PhotoSource || source is PhotoImportSource) {
++#else
++            if (source is PhotoSource) {
++#endif
+                 MediaSource media = (MediaSource) source;
+                 file_path = media.get_master_file().get_path();
+                 development_path = media.get_file().get_path();
+--- origsrc/shotwell-0.14.1/src/SearchFilter.vala	2013-07-30 01:07:10.283491500 -0500
++++ src/shotwell-0.14.1/src/SearchFilter.vala	2013-07-30 01:00:40.000000000 -0500
+@@ -492,8 +492,10 @@ public class SearchFilterActions {
              Core.ViewTracker? tracker = old_tracked_page.get_view_tracker();
              if (tracker is MediaViewTracker)
                  tracker.updated.disconnect(on_media_tracker_updated);
@@ -133,7 +145,7 @@
          }
          
          CheckerboardPage? new_tracked_page = new_page as CheckerboardPage;
-@@ -496,11 +498,13 @@ public class SearchFilterActions {
+@@ -506,11 +508,13 @@ public class SearchFilterActions {
                  on_media_tracker_updated(tracker);
                  
                  return;
@@ -147,7 +159,7 @@
              }
          }
          
-@@ -525,6 +529,7 @@ public class SearchFilterActions {
+@@ -535,6 +539,7 @@ public class SearchFilterActions {
          update_sensitivities();
      }
      
@@ -155,7 +167,7 @@
      private void on_camera_tracker_updated(Core.Tracker t) {
          CameraViewTracker tracker = (CameraViewTracker) t;
          
-@@ -535,6 +540,7 @@ public class SearchFilterActions {
+@@ -545,6 +550,7 @@ public class SearchFilterActions {
  
          update_sensitivities();
      }
@@ -163,8 +175,8 @@
      
      private void update_sensitivities() {
          flagged.set_stock_id(((SearchFilterCriteria.FLAG & criteria) != 0 && has_flagged) ?
---- origsrc/shotwell-0.13.1/src/camera/mk/camera.mk	2012-10-05 12:51:09.000000000 -0500
-+++ src/shotwell-0.13.1/src/camera/mk/camera.mk	2012-11-01 22:13:33.604495000 -0500
+--- origsrc/shotwell-0.14.1/src/camera/mk/camera.mk	2013-07-30 01:07:10.309493000 -0500
++++ src/shotwell-0.14.1/src/camera/mk/camera.mk	2013-07-30 01:00:40.000000000 -0500
 @@ -12,7 +12,6 @@ UNIT_DIR := camera
  # NOTE: Do *not* include the unit's master file, i.e. UNIT_NAME.vala.
  UNIT_FILES := \
@@ -173,9 +185,9 @@
  	GPhoto.vala \
  	ImportPage.vala
  
---- origsrc/shotwell-0.13.1/src/library/LibraryWindow.vala	2012-10-05 12:59:29.000000000 -0500
-+++ src/shotwell-0.13.1/src/library/LibraryWindow.vala	2012-11-01 22:15:41.344671200 -0500
-@@ -114,7 +114,9 @@ public class LibraryWindow : AppWindow {
+--- origsrc/shotwell-0.14.1/src/library/LibraryWindow.vala	2013-07-30 01:07:10.334494400 -0500
++++ src/shotwell-0.14.1/src/library/LibraryWindow.vala	2013-07-30 01:00:40.000000000 -0500
+@@ -120,7 +120,9 @@ public class LibraryWindow : AppWindow {
      private Library.FlaggedBranch flagged_branch = new Library.FlaggedBranch();
      private Library.LastImportBranch last_import_branch = new Library.LastImportBranch();
      private Library.ImportQueueBranch import_queue_branch = new Library.ImportQueueBranch();
@@ -185,7 +197,7 @@
      private Searches.Branch saved_search_branch = new Searches.Branch();
      private bool page_switching_enabled = true;
      
-@@ -171,7 +173,9 @@ public class LibraryWindow : AppWindow {
+@@ -178,7 +180,9 @@ public class LibraryWindow : AppWindow {
          sidebar_tree.graft(flagged_branch, SidebarRootPosition.FLAGGED);
          sidebar_tree.graft(last_import_branch, SidebarRootPosition.LAST_IMPORTED);
          sidebar_tree.graft(import_queue_branch, SidebarRootPosition.IMPORT_QUEUE);
@@ -195,7 +207,7 @@
          sidebar_tree.graft(saved_search_branch, SidebarRootPosition.SAVED_SEARCH);
          
          // create and connect extended properties window
-@@ -230,7 +234,9 @@ public class LibraryWindow : AppWindow {
+@@ -237,7 +241,9 @@ public class LibraryWindow : AppWindow {
          LibraryMonitorPool.get_instance().monitor_installed.connect(on_library_monitor_installed);
          LibraryMonitorPool.get_instance().monitor_destroyed.connect(on_library_monitor_destroyed);
          
@@ -205,7 +217,7 @@
          
          background_progress_bar.set_show_text(true);
          
-@@ -261,7 +267,9 @@ public class LibraryWindow : AppWindow {
+@@ -268,7 +274,9 @@ public class LibraryWindow : AppWindow {
          LibraryMonitorPool.get_instance().monitor_installed.disconnect(on_library_monitor_installed);
          LibraryMonitorPool.get_instance().monitor_destroyed.disconnect(on_library_monitor_destroyed);
          
@@ -215,7 +227,7 @@
      }
      
      private void on_library_monitor_installed(LibraryMonitor monitor) {
-@@ -1037,6 +1045,7 @@ public class LibraryWindow : AppWindow {
+@@ -1069,6 +1077,7 @@ public class LibraryWindow : AppWindow {
          switch_to_page(import_queue_branch.get_queue_page());
      }
      
@@ -223,7 +235,7 @@
      private void on_camera_added(DiscoveredCamera camera) {
          Camera.SidebarEntry? entry = camera_branch.get_entry_for_camera(camera);
          if (entry == null)
-@@ -1063,6 +1072,7 @@ public class LibraryWindow : AppWindow {
+@@ -1095,6 +1104,7 @@ public class LibraryWindow : AppWindow {
              switch_to_page(page);
          }
      }
@@ -231,7 +243,7 @@
  
      // This should only be called by LibraryWindow and PageStub.
      public void add_to_notebook(Page page) {
-@@ -1505,8 +1515,10 @@ public class LibraryWindow : AppWindow {
+@@ -1553,8 +1563,10 @@ public class LibraryWindow : AppWindow {
          
          // convert file: URIs into gphoto disk: URIs
          string alt_uri = null;
@@ -242,18 +254,18 @@
          
          // we only add uris when the notification is called on startup
          if (at_startup) {
---- origsrc/shotwell-0.13.1/src/library/mk/library.mk	2012-10-05 12:51:09.000000000 -0500
-+++ src/shotwell-0.13.1/src/library/mk/library.mk	2012-11-01 22:15:50.334683600 -0500
+--- origsrc/shotwell-0.14.1/src/library/mk/library.mk	2013-07-30 01:07:10.362496000 -0500
++++ src/shotwell-0.14.1/src/library/mk/library.mk	2013-07-30 01:00:40.000000000 -0500
 @@ -40,7 +40,6 @@ UNIT_USES := \
  	Sidebar \
  	Events \
  	Tags \
 -	Camera \
  	Searches \
- 	DataImports
- 
---- origsrc/shotwell-0.13.1/units.mk	2012-10-05 12:51:09.000000000 -0500
-+++ src/shotwell-0.13.1/units.mk	2012-11-01 22:16:05.184704100 -0500
+ 	DataImports \
+ 	Folders
+--- origsrc/shotwell-0.14.1/units.mk	2013-07-30 01:07:10.391497700 -0500
++++ src/shotwell-0.14.1/units.mk	2013-07-30 01:00:40.000000000 -0500
 @@ -22,7 +22,6 @@ UNITS = \
  	sidebar \
  	events \
@@ -261,4 +273,4 @@
 -	camera \
  	searches \
  	config \
- 	data_imports
+ 	data_imports \
