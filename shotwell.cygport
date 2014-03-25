@@ -1,5 +1,5 @@
 NAME="shotwell"
-VERSION=0.14.1
+VERSION=0.15.1
 RELEASE=1
 CATEGORY="Graphics"
 SUMMARY="GNOME digital photo organizer"
@@ -10,8 +10,8 @@ and export them to share with others."
 HOMEPAGE="http://yorba.org/shotwell/"
 SRC_URI="http://yorba.org/download/shotwell/${VERSION%.*}/${NAME}-${VERSION}.tar.xz"
 PATCH_URI="
-	http://pkgs.fedoraproject.org/cgit/shotwell.git/plain/shotwell-0.14.1-LibRaw.patch
-	0.14.1-no-gudev.patch
+	http://pkgs.fedoraproject.org/cgit/shotwell.git/plain/shotwell-0.15.1-format-security.patch?h=f20
+	0.15.1-no-gudev.patch
 	0.13.1-plugin-no-undefined.patch
 "
 
