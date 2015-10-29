@@ -2,7 +2,7 @@ inherit gnome.org
 
 NAME="shotwell"
 VERSION=0.20.2
-RELEASE=1
+RELEASE=2
 CATEGORY="Graphics"
 SUMMARY="GNOME digital photo organizer"
 DESCRIPTION="Shotwell is a digital photo organizer designed for the GNOME
@@ -11,6 +11,9 @@ organize them in various ways, view them in full-window or fullscreen mode,
 and export them to share with others."
 HOMEPAGE="https://wiki.gnome.org/Apps/Shotwell"
 PATCH_URI="
+	http://pkgs.fedoraproject.org/cgit/shotwell.git/plain/shotwell-thumbnail-vid-crash-check.patch?h=f21
+	http://pkgs.fedoraproject.org/cgit/shotwell.git/plain/shotwell-thumbnail-usegdkpixbufsink.patch?h=f21
+	http://pkgs.fedoraproject.org/cgit/shotwell.git/plain/shotwell-thumbnail-vid-hang.patch?h=f21
 	0.15.1-no-gudev.patch
 	0.13.1-plugin-no-undefined.patch
 "
